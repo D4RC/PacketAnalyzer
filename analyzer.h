@@ -31,8 +31,10 @@ void print_packet();
 void init();
 
 struct SPID {
-    char desc[20];
+    char device[20];
     int pid;
 };
+
+FILE *file;
 
 #endif //_READER_H

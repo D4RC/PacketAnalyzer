@@ -195,11 +195,11 @@ void print_ethernet_header(const unsigned char *buffer, int size)
 {
     struct ethhdr *eth = (struct ethhdr *) buffer;
 
-    fprintf(logfile , "\n");
-	fprintf(logfile , "Ethernet Header\n");
-	fprintf(logfile , "\t Destination Address : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X \n", eth->h_dest[0] , eth->h_dest[1] , eth->h_dest[2] , eth->h_dest[3] , eth->h_dest[4] , eth->h_dest[5] );
-	fprintf(logfile , "\t Source Address      : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X \n", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5] );
-	fprintf(logfile , "\t Protocol            : %u \n",(unsigned short)eth->h_proto);
+    fprintf(LOGFILE, "\n");
+	fprintf(LOGFILE, "Ethernet Header\n");
+	fprintf(LOGFILE, "\t Destination Address : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X \n", eth->h_dest[0] , eth->h_dest[1] , eth->h_dest[2] , eth->h_dest[3] , eth->h_dest[4] , eth->h_dest[5]);
+	fprintf(LOGFILE, "\t Source Address      : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X \n", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]);
+	fprintf(LOGFILE, "\t Protocol            : %u \n", (unsigned short)eth->h_proto);
 }
 
 void print_ip_header(const unsigned char *buffer, int size)
@@ -237,6 +237,8 @@ void print_tcp_packet(const unsigned char *buffer, int size)
 {
     unsigned short iphdrlen;
 
+
+
 }
 
 void print_udp_packet(const unsigned char *buffer, int size)
@@ -249,4 +251,54 @@ void print_icmp_packet(const unsigned char *buffer, int size)
 
 }
 
-
+/*
+    @brief: Auxiliary function to print packet data
+    @param data: Pointer to the buffer that contains the data
+    @param size: Size of data
+*/
+void print_data(const unsigned char *data, int size)
+{
+    for(int i = 0; i < size; i++)
+    {
+        if(i != 0 && i%16 == 0) // Each hex line completion
+        {
+            fprintf(LOGFILE, "\t\t");
+            for(int j = i - 16; j < i; j++)
+            {
+                if(data[j] >= 32 && data[j] <= 128) // Alphanumerics
+                    fprintf(LOGFILE, "%c", (unsigned char)data[j]);
+                else
+                    fprintf(LOGFILE, ".");
+            }
+            fprintf(LOGFILE, "\n");
+        }
+        if(i % 16 == 0)
+            fprintf(LOGFILE, "\t\t");
+        
+        fprintf(LOGFILE, " %02x", (unsigned int)data[i]);
+    
+        if(i == size - 1)   // Last line padding
+        {
+            for(int j = 0; j < 15 - i % 16; j++) 
+			{
+			    fprintf(LOGFILE, "   ");
+			}
+			
+			fprintf(LOGFILE, "\t\t");
+			
+			for(int j = i - i % 16; j <= i; j++)
+			{
+			    if(data[j] >= 32 && data[j] <= 128) 
+				{
+				    fprintf(LOGFILE, "%c", (unsigned char)data[j]);
+				}
+				else 
+				{
+				    fprintf(LOGFILE, ".");
+				}
+			}
+			
+			fprintf(LOGFILE,  "\n" );
+        }
+    }
+}

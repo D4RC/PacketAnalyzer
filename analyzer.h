@@ -2,7 +2,9 @@
 #define _READER_H_
 
 #include <pcap.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <arpa/inet.h>  // for inet_ntoa() [IPv4 Address format]
 #include <net/ethernet.h>
@@ -26,6 +28,7 @@ void start_analyzer();
 void end_analyzer();
 void help();
 void print_packet();
+void init();
 
 struct SPID {
     char desc[20];

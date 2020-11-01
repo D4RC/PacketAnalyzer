@@ -67,7 +67,7 @@ void start_analyzer(char *interface)
         {
             flag = 1;
         }
-        fscanf(interfaces, "%s", interface);
+        fscanf(interfaces, "%s", name);
     }
     
     if(flag)
@@ -92,9 +92,66 @@ void start_analyzer(char *interface)
         exit(1);
     }
 
+    // Output file
+    printf("Creating logfile : log.txt");
+    logfile=fopen("log.txt", "w");
+    if(!logfile)
+        printf("Unable to create log file");
+
     printf(" ");
     // Put the device in sniff loop
     pcap_loop(handle, -1, process_packet, NULL);
+}
+
+void end_analyzer()
+{
+    pid_t pid;
+
+    file = fopen("pids", "a+b");
+
+    if(file == NULL)
+        printf("pids error\n");
+    
+    struct SPID spid;
+    fread(&spid, 1, sizeof(struct SPID), file);
+
+    if(feof(file))
+    {
+        printf("Error\n");
+        exit(1);
+    }
+
+    vector tmp;
+    vector_init(&tmp);
+
+    while(1)
+    {
+        if(feof(file)) 
+            break;
+        pid = spid.pid;
+        vector_add(&tmp, spid.device);
+
+        if(pid != -1)
+            printf("Kill pid: %d\n", pid);
+        if(pid != -1)
+            kill(pid, SIGKILL);
+        else 
+            printf("program not runs\n");
+
+        fread(&spid, 1, sizeof(struct SPID), file);
+    }
+
+    fclose(file);
+    file = fopen("pids", "wb");
+    int i;
+    for(i=0;i < vector_count(&tmp);i++)
+    {
+        strcpy(spid.device, vector_get(&tmp, i));
+        spid.pid = -1;
+        fwrite(&spid, 1, sizeof(struct SPID), file);
+    }
+    vector_free(&tmp);
+    fclose(file);
 }
 
 /*
@@ -114,9 +171,6 @@ void process_packet(unsigned char *args, const struct pcap_pkthdr *header, const
         case 1:
             //++icmp;
             print_icmp_packet(buffer, size);
-            break;
-        case 2:
-            //++igmp;
             break;
         case 6:
             //++tcp;
@@ -231,8 +285,27 @@ void create_daemon(char *dev)
             printf("Track update, write (%s: %d)\n", spid.device, spid.pid);
             fwrite(&spid, 1, sizeof(struct SPID), file);
         }
-        fclose(file);
+    }
+    fclose(file);
+    printf("Done\n");
+}
+
+void sig_handler(int signal)
+{
+    printf("\n");
+
+    if(signal == SIGUSR1)
+    {
         printf("Done\n");
+        printf("Process ID:\t%d\n", getpid());
+    }
+    else if(signal == SIGUSR2)
+    {
+        printf("Process ID:\t%d\n", getpid());
+    }
+    else
+    {
+        printf("Not handled");
     }
 }
 

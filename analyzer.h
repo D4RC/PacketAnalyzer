@@ -19,9 +19,14 @@
 #include <signal.h>
 #include <sys/ipc.h>
 
+#include "vector.h"
+
 // Daemon related functions
 void create_daemon();
 void die_err();
+void sig_handler(int signal);
+
+struct sigaction act;
 
 // Analyzer functions
 void start_analyzer();

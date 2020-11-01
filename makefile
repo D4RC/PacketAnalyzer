@@ -1,6 +1,7 @@
+CC=gcc
 CFLAGS=-c 
 LPCAP=-lpcap 
-SOURCES=main.c analyzer.c
+SOURCES=main.c vector.c analyzer.c 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=analyzer
 

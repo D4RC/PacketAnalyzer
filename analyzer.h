@@ -27,14 +27,34 @@ void die_err();
 void start_analyzer();
 void end_analyzer();
 void help();
-void print_packet();
-void init();
 
+void device_selection();
+void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
+void process_ip_packet(const u_char *, int);
+void print_ip_packet(const u_char *, int);
+void print_tcp_packet(const u_char * , int );
+void print_udp_packet(const u_char *, int);
+void print_icmp_packet(const u_char *, int );
+void print_data (const u_char *, int);
+
+// Analyzer variables and data structures
 struct SPID {
     char device[20];
     int pid;
 };
 
-FILE *file;
+char *device_name;
+char errBuf[100];
+
+//Handle to de device to analyze
+pcap_t *handle; 
+
+// Support files
+#define INTERFACES "interfaces"
+
+FILE *file, *flagstat, *interfaces, *logfile;
+
+struct sockaddr_in source, dest;
+
 
 #endif //_READER_H

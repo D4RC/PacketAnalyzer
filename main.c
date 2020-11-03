@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     else if(!strcmp(argv[1], "start"))
     {
         if(argv[2])
-            start_analyzer(argv[3]);
+            start_analyzer(argv[2]);
         else
             printf("No specified device\n");
     }

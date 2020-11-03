@@ -16,8 +16,10 @@ int main(int argc, char **argv)
     }
     else if(!strcmp(argv[1], "--help"))
     {
-        //help();
-        ;
+        printf("The application requires root or superuser privilege to work properly\n");
+        printf("select an interface an start analyzer:     init\n");
+        printf("start analyzer in an specific inerface:    start [interface]\n");
+        printf("stop analyzer:                             stop\n");
     }
     else if(!strcmp(argv[1], "init"))
     {
@@ -26,7 +28,10 @@ int main(int argc, char **argv)
     }
     else if(!strcmp(argv[1], "start"))
     {
-        start_analyzer(argv[3]);
+        if(argv[2])
+            start_analyzer(argv[3]);
+        else
+            printf("No specified device\n");
     }
     else if(!strcmp(argv[1], "stop"))
     {

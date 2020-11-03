@@ -53,7 +53,6 @@ void start_analyzer(char *interface)
     char name[10];
     int flag= 1;
 
-    flagstat = fopen(interface, "w");
     interfaces = fopen(INTERFACES, "a+");
 
     while(!feof(interfaces))
@@ -150,6 +149,12 @@ void end_analyzer()
         spid.pid = -1;
         fwrite(&spid, 1, sizeof(struct SPID), file);
     }
+
+    remove("log.txt");
+    remove("interfaces");
+    remove("pids");
+
+
     vector_free(&tmp);
     fclose(file);
 }
@@ -213,7 +218,17 @@ void create_daemon(char *dev)
         exit(0);
     }
 
-    //unmask(0);
+    // New file permissions
+    // umask(0);
+
+    // New working directory
+    // chdir("/");
+
+    int k;
+    for (k = sysconf(_SC_OPEN_MAX); k>=0; k--)
+    {
+        close(k);
+    }
 
     sid = setsid(); // New session 
     if(sid < 0)
